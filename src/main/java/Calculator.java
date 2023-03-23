@@ -15,28 +15,28 @@ public class Calculator {
     /**
      * 历史操作数
      */
-    private final static Stack<BigDecimal> preNumberStack = new Stack<>();
+    private final static Stack<BigDecimal> PRE_NUMBER_STACK = new Stack<>();
     /**
      * 历史操作符
      */
-    private final static Stack<String> preFuHaoStack = new Stack<>();
+    private final static Stack<String> PRE_FU_HAO_STACK = new Stack<>();
     /**
      * 历史操作结果
      */
-    private final static Stack<BigDecimal> preResultStack = new Stack<>();
+    private final static Stack<BigDecimal> PRE_RESULT_STACK = new Stack<>();
 
     /**
      * 重做操作数
      */
-    private final static Stack<BigDecimal> redoNumberStack = new Stack<>();
+    private final static Stack<BigDecimal> REDO_NUMBER_STACK = new Stack<>();
     /**
      * 重做操作结果
      */
-    private final static Stack<BigDecimal> redoResultStack = new Stack<>();
+    private final static Stack<BigDecimal> REDO_RESULT_STACK = new Stack<>();
     /**
      * 重做操作符
      */
-    private final static Stack<String> redoFuHaoStack = new Stack<>();
+    private final static Stack<String> REDO_FU_HAO_STACK = new Stack<>();
     /**
      * 第一位操作数
      */
@@ -92,13 +92,13 @@ public class Calculator {
      * @param input 符号
      */
     private static void process(String input) {
-        preFuHaoStack.push(input);
+        PRE_FU_HAO_STACK.push(input);
         curFuHao = input;
         //清除redo
-        if (!redoNumberStack.isEmpty()) {
-            redoResultStack.clear();
-            redoFuHaoStack.clear();
-            redoNumberStack.clear();
+        if (!REDO_NUMBER_STACK.isEmpty()) {
+            REDO_RESULT_STACK.clear();
+            REDO_FU_HAO_STACK.clear();
+            REDO_NUMBER_STACK.clear();
         }
     }
 
@@ -106,18 +106,18 @@ public class Calculator {
      * 重做处理
      */
     private static void redoProcess() {
-        if (redoNumberStack.isEmpty() || redoFuHaoStack.isEmpty() || newNum != null) {
+        if (REDO_NUMBER_STACK.isEmpty() || REDO_FU_HAO_STACK.isEmpty() || newNum != null) {
             System.out.println("暂没有可重做的操作!");
             return;
         }
-        BigDecimal preResult = preResultStack.peek();
-        BigDecimal redoNumber = redoNumberStack.pop();
-        String redoFuHao = redoFuHaoStack.pop();
-        preNumberStack.push(redoNumber);
-        preFuHaoStack.push(redoFuHao);
+        BigDecimal preResult = PRE_RESULT_STACK.peek();
+        BigDecimal redoNumber = REDO_NUMBER_STACK.pop();
+        String redoFuHao = REDO_FU_HAO_STACK.pop();
+        PRE_NUMBER_STACK.push(redoNumber);
+        PRE_FU_HAO_STACK.push(redoFuHao);
         //当前结果
-        preNum = redoResultStack.pop();
-        preResultStack.push(preNum);
+        preNum = REDO_RESULT_STACK.pop();
+        PRE_RESULT_STACK.push(preNum);
         System.out.println(
             String.format(
                 "redo前结果为:%s,redo的操作为:%s,redo的操作数为:%s,redo后结果为:%s",
@@ -133,20 +133,20 @@ public class Calculator {
      * 撤销处理
      */
     private static void undoProcess() {
-        if (preFuHaoStack.isEmpty() || preNumberStack.isEmpty()) {
+        if (PRE_FU_HAO_STACK.isEmpty() || PRE_NUMBER_STACK.isEmpty()) {
             System.out.println("暂没有可撤销的操作!");
             return;
         }
-        BigDecimal preNumber = preNumberStack.pop();
-        String preFuHao = preFuHaoStack.pop();
-        redoNumberStack.push(preNumber);
-        redoFuHaoStack.push(preFuHao);
+        BigDecimal preNumber = PRE_NUMBER_STACK.pop();
+        String preFuHao = PRE_FU_HAO_STACK.pop();
+        REDO_NUMBER_STACK.push(preNumber);
+        REDO_FU_HAO_STACK.push(preFuHao);
         //已经输入了等号
-        BigDecimal preResult = preResultStack.pop();
+        BigDecimal preResult = PRE_RESULT_STACK.pop();
         if (newNum == null) {
             //先去除当前结果
-            redoResultStack.push(preResult);
-            preNum = preResultStack.isEmpty() ? BigDecimal.ZERO : preResultStack.peek();
+            REDO_RESULT_STACK.push(preResult);
+            preNum = PRE_RESULT_STACK.isEmpty() ? BigDecimal.ZERO : PRE_RESULT_STACK.peek();
         }
         System.out.println(
             String.format(
@@ -170,10 +170,10 @@ public class Calculator {
         } catch (Exception e) {
             System.out.println("不支持该类型操作！");
         }
-        preNumberStack.push(inputDecimal);
+        PRE_NUMBER_STACK.push(inputDecimal);
         if (preNum == null) {
             preNum = inputDecimal;
-            preResultStack.push(inputDecimal);
+            PRE_RESULT_STACK.push(inputDecimal);
         } else {
             newNum = inputDecimal;
         }
@@ -191,7 +191,7 @@ public class Calculator {
         preNum = result;
         newNum = null;
         curFuHao = null;
-        preResultStack.push(result);
+        PRE_RESULT_STACK.push(result);
     }
 
     /**
